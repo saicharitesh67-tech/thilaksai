@@ -39,7 +39,7 @@ export default function BrandReferral() {
   };
 
   return (
-    <section id="referral" className="py-24 bg-gray-50/50">
+    <section id="referral" className="py-24 bg-[#FFF9C4]/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-8">
           {/* Brand Request Card */}

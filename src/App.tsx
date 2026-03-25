@@ -7,8 +7,8 @@ import SearchOverlay from './components/SearchOverlay';
 import AddressModal from './components/AddressModal';
 import BrandReferral from './components/BrandReferral';
 import { motion, AnimatePresence } from 'motion/react';
-import { Star, Clock, MapPin, ChevronRight, Sparkles, ShieldCheck, Search, X, ShoppingCart } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { Star, Clock, MapPin, ChevronRight, Sparkles, ShieldCheck, Search, X, ShoppingCart, Share2 } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
 import { Toaster, toast } from 'sonner';
 
 const FEATURED_PRODUCTS = [
@@ -313,6 +313,86 @@ const FEATURED_PRODUCTS = [
     features: ['Nitroedge technology for lightweight cushioning', 'A-Flashfoam for impact protection', 'Dynamic fit system', 'Durable traction pattern'],
     colors: ['Neon Green', 'White/Blue', 'Black/Red'],
     sizes: ['IND 6', 'IND 7', 'IND 8', 'IND 9', 'IND 10', 'IND 11']
+  },
+  {
+    id: 16,
+    name: 'Campus',
+    price: '₹899',
+    originalPrice: '₹2,999',
+    numericPrice: 899,
+    discountPercentage: 70,
+    rating: 4.7,
+    time: '2-4 Days',
+    reviews: [
+      { id: 18, user: 'Suresh M.', rating: 5, comment: 'Excellent value for money. Very comfortable for daily wear.', date: '3 days ago' }
+    ],
+    image: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=500&q=80',
+    category: 'Athletic',
+    keywords: ['campus', 'indian', 'running', 'affordable', 'comfort'],
+    description: 'Campus is one of India\'s most popular athletic footwear brands, known for delivering high-quality, stylish, and comfortable shoes at exceptional value. Their running and lifestyle collections are designed for the modern active individual.',
+    features: ['Yoga Max insole for extra comfort', 'Breathable mesh upper', 'Phylon sole for lightweight cushioning', 'Trendy design patterns'],
+    colors: ['Jet Black', 'Slate Grey', 'Royal Blue'],
+    sizes: ['IND 6', 'IND 7', 'IND 8', 'IND 9', 'IND 10', 'IND 11']
+  },
+  {
+    id: 17,
+    name: 'Nike Yellow Streak',
+    price: '₹2,499',
+    originalPrice: '₹12,499',
+    numericPrice: 2499,
+    discountPercentage: 80,
+    rating: 4.9,
+    time: 'Express Ship',
+    reviews: [
+      { id: 19, user: 'Arjun V.', rating: 5, comment: 'The yellow is so vibrant! Love the black accents.', date: '1 day ago' }
+    ],
+    image: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?auto=format&fit=crop&w=500&q=80',
+    category: 'Sneakers',
+    keywords: ['nike', 'yellow', 'black lines', 'streak', 'performance'],
+    description: 'The Nike Yellow Streak is a bold statement piece. Featuring a vibrant yellow upper with sharp black lines, this shoe combines Nike\'s legendary comfort with an aggressive, high-energy design.',
+    features: ['Vibrant yellow synthetic upper', 'Sleek black line accents', 'Responsive cushioning', 'High-traction rubber sole'],
+    colors: ['Yellow/Black'],
+    sizes: ['IND 7', 'IND 8', 'IND 9', 'IND 10', 'IND 11']
+  },
+  {
+    id: 18,
+    name: 'Adidas Fusion',
+    price: '₹2,999',
+    originalPrice: '₹9,999',
+    numericPrice: 2999,
+    discountPercentage: 70,
+    rating: 4.8,
+    time: '2-3 Days',
+    reviews: [
+      { id: 20, user: 'Sanya G.', rating: 5, comment: 'The red and green combo is so unique! Very comfortable.', date: '2 days ago' }
+    ],
+    image: 'https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?auto=format&fit=crop&w=500&q=80',
+    category: 'Originals',
+    keywords: ['adidas', 'fusion', 'red', 'green', 'colorful', 'three stripes'],
+    description: 'The Adidas Fusion brings a vibrant pop of color to your wardrobe. This model features a striking red and green colorway, combining classic Adidas heritage with a modern, energetic twist.',
+    features: ['Vibrant red and green upper', 'Classic three-stripe branding', 'Cushioned midsole for comfort', 'Durable rubber outsole'],
+    colors: ['Red/Green'],
+    sizes: ['IND 7', 'IND 8', 'IND 9', 'IND 10', 'IND 11']
+  },
+  {
+    id: 19,
+    name: 'Royal Oxford',
+    price: '₹1,500',
+    originalPrice: '₹10,000',
+    numericPrice: 1500,
+    discountPercentage: 85,
+    rating: 4.9,
+    time: 'Next Day',
+    reviews: [
+      { id: 21, user: 'Vikram A.', rating: 5, comment: 'Unbelievable deal for such quality leather!', date: 'Today' }
+    ],
+    image: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=800&q=80',
+    category: 'Formal',
+    keywords: ['formal', 'oxford', 'leather', 'royal', 'discount'],
+    description: 'The Royal Oxford is the pinnacle of formal elegance. Handcrafted from premium full-grain leather, these shoes offer a timeless silhouette that commands respect in any boardroom or black-tie event.',
+    features: ['Full-grain premium leather', 'Hand-stitched detailing', 'Breathable leather lining', 'Anti-fatigue cushioned insole'],
+    colors: ['Midnight Black', 'Oxford Brown'],
+    sizes: ['IND 7', 'IND 8', 'IND 9', 'IND 10', 'IND 11']
   }
 ];
 
@@ -324,6 +404,14 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [address, setAddress] = useState<any>(null);
+  const [backendStatus, setBackendStatus] = useState<string>('Checking...');
+
+  useEffect(() => {
+    fetch('/api/health')
+      .then(res => res.json())
+      .then(data => setBackendStatus(data.message))
+      .catch(() => setBackendStatus('Backend connection failed'));
+  }, []);
 
   const filteredProducts = useMemo(() => {
     if (!searchQuery.trim()) return FEATURED_PRODUCTS;
@@ -426,9 +514,28 @@ export default function App() {
     setIsCartOpen(false);
     setCartItems([]);
   };
+  
+  const handleShare = async (product: any) => {
+    const shareData = {
+      title: `Foot Rush - ${product.name}`,
+      text: `Check out these ${product.name} at Foot Rush! Only ${product.price}.`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (err) {
+      console.error('Error sharing:', err);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-white font-sans selection:bg-emerald-100 selection:text-emerald-900">
+    <div className="min-h-screen bg-[#FFFDE7] font-sans selection:bg-emerald-100 selection:text-emerald-900">
       <Header 
         cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)} 
         onOpenCart={() => setIsCartOpen(true)} 
@@ -499,7 +606,7 @@ export default function App() {
         </section>
 
         {/* Categories Section */}
-        <section className="py-20 bg-gray-50">
+        <section className="py-20 bg-[#FFF9C4]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-end mb-12">
               <div className="space-y-2">
@@ -585,6 +692,16 @@ export default function App() {
                           referrerPolicy="no-referrer"
                         />
                         <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleShare(product);
+                            }}
+                            className="p-2 bg-white/90 backdrop-blur-sm rounded-full text-gray-600 hover:text-emerald-600 shadow-sm transition-all"
+                            title="Share product"
+                          >
+                            <Share2 className="w-4 h-4" />
+                          </button>
                           <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-emerald-600 flex items-center gap-1 shadow-sm">
                             <Star className="w-3 h-3 fill-emerald-600" />
                             {product.rating}
@@ -748,7 +865,7 @@ export default function App() {
         </section>
       </main>
 
-      <Footer />
+      <Footer status={backendStatus} />
       
       <ProductModal 
         product={selectedProduct} 

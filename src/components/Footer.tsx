@@ -1,7 +1,7 @@
 import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 import Logo from './Logo';
 
-export default function Footer() {
+export default function Footer({ status }: { status?: string }) {
   return (
     <footer className="bg-gray-900 text-gray-300 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -12,6 +12,12 @@ export default function Footer() {
             <p className="text-sm leading-relaxed">
               Premium shoe care and exclusive footwear destination. We keep your steps fresh and your style ahead.
             </p>
+            {status && (
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-emerald-500 font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                {status}
+              </div>
+            )}
             <div className="flex gap-4">
               <a href="#" className="p-2 bg-gray-800 hover:bg-emerald-600 hover:text-white rounded-full transition-all">
                 <Facebook className="w-5 h-5" />

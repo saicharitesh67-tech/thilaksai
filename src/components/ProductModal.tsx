@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Star, Clock, ShieldCheck, ShoppingCart, Info, Check } from 'lucide-react';
+import { X, Star, Clock, ShieldCheck, ShoppingCart, Info, Check, Share2 } from 'lucide-react';
 import { useState, useEffect, FormEvent } from 'react';
 import { toast } from 'sonner';
 
@@ -66,6 +66,26 @@ export default function ProductModal({ product, onClose, onBuyNow, onAddToCart }
     setNewReview({ rating: 5, comment: '' });
   };
 
+  const handleShare = async () => {
+    if (!product) return;
+    const shareData = {
+      title: `Foot Rush - ${product.name}`,
+      text: `Check out these ${product.name} at Foot Rush! Only ${product.price}.`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (err) {
+      console.error('Error sharing:', err);
+    }
+  };
+
   const sizeGuideData = [
     { ind: '6', cm: '24.5', uk: '6', us: '7' },
     { ind: '7', cm: '25.4', uk: '7', us: '8' },
@@ -99,7 +119,7 @@ export default function ProductModal({ product, onClose, onBuyNow, onAddToCart }
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-4xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row"
+            className="relative w-full max-w-4xl bg-[#FFFDE7] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row"
           >
             <button
               onClick={onClose}
@@ -132,12 +152,22 @@ export default function ProductModal({ product, onClose, onBuyNow, onAddToCart }
             <div className="md:w-1/2 p-8 md:p-12 space-y-8 overflow-y-auto max-h-[70vh] md:max-h-none">
               <div className="space-y-4">
                 <div className="flex justify-between items-start">
-                  <h2 className="text-3xl font-bold text-gray-900 leading-tight">{product.name}</h2>
-                  <div className="text-right">
+                  <div className="flex-1">
+                    <h2 className="text-3xl font-bold text-gray-900 leading-tight">{product.name}</h2>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
                     <div className="text-2xl font-bold text-emerald-600">{product.price}</div>
                     {product.originalPrice && (
                       <div className="text-sm text-gray-400 line-through">{product.originalPrice}</div>
                     )}
+                    <button 
+                      onClick={handleShare}
+                      className="p-2 bg-gray-50 hover:bg-gray-100 rounded-full text-gray-500 hover:text-emerald-600 transition-all flex items-center gap-2 text-xs font-bold"
+                      title="Share product"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      Share
+                    </button>
                   </div>
                 </div>
                 
